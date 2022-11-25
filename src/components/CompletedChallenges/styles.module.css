@@ -1,0 +1,17 @@
+.container {
+  align-items: center;
+  border-bottom: 1px solid #d7d8d1;
+  display: flex;
+  font-weight: 500;
+  justify-content: space-between;
+  margin: 3.5rem 0;
+  padding-bottom: 1rem;
+}
+
+.container span:first-child {
+  font-size: 1.25rem;
+}
+
+.container span:last-child {
+  font: 1.5rem;
+}
