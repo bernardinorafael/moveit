@@ -29,9 +29,10 @@ export default function CountdownProvider({ children }: { children: React.ReactN
   }
 
   function handleResetCountdown() {
-    setTime(0.1 * 60)
-    setIsActive(false)
     clearTimeout(countdownTimeout)
+    setHasFinished(false)
+    setIsActive(false)
+    setTime(25 * 60)
   }
 
   useEffect(() => {
@@ -40,9 +41,9 @@ export default function CountdownProvider({ children }: { children: React.ReactN
         setTime(time - 1)
       }, 1000)
     } else if (isActive && time === 0) {
+      startNewChallenge()
       setHasFinished(true)
       setIsActive(false)
-      startNewChallenge()
     }
   }, [isActive, startNewChallenge, time])
 

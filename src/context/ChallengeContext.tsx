@@ -1,6 +1,15 @@
-import { createContext, useState } from "react"
+/* eslint-disable no-new */
+import { createContext, useEffect, useState } from "react"
 import challenges from "../../challenges.json"
+import Cookies from "js-cookie"
 import { Challenge } from "../@types/challenge"
+
+interface ChallengeProviderProps {
+  level: number
+  currentExperience: number
+  children: React.ReactNode
+  challengesCompleted: number
+}
 
 interface ChallengeContextProps {
   level: number
@@ -15,13 +24,28 @@ interface ChallengeContextProps {
 
 export const ChallengeContext = createContext({} as ChallengeContextProps)
 
-export default function ChallengeProvider({ children }: { children: React.ReactNode }) {
-  const [level, setLevel] = useState<number>(1)
-  const [currentExperience, setCurrentExperience] = useState<number>(0)
-  const [challengesCompleted, setChallengesCompleted] = useState<number>(0)
-  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null)
+export default function ChallengeProvider({ children, ...rest }: ChallengeProviderProps) {
+  const [level, setLevel] = useState<number>(rest.level ?? 1)
+  const [currentExperience, setCurrentExperience] = useState<number>(
+    rest.currentExperience ?? 0
+  )
 
+  const [challengesCompleted, setChallengesCompleted] = useState<number>(
+    rest.challengesCompleted ?? 0
+  )
+
+  const [activeChallenge, setActiveChallenge] = useState<Challenge | null>(null)
   const experienceToNextLevel = Math.pow((level + 1) * 5, 2)
+
+  useEffect(() => {
+    Notification.requestPermission()
+  }, [])
+
+  useEffect(() => {
+    Cookies.set("level", String(level))
+    Cookies.set("currentExperience", String(currentExperience))
+    Cookies.set("challengesCompleted", String(challengesCompleted))
+  }, [level, currentExperience, challengesCompleted])
 
   function levelUp() {
     setLevel(level + 1)
@@ -32,6 +56,8 @@ export default function ChallengeProvider({ children }: { children: React.ReactN
     const challenge: Challenge = challenges[randomChallengeIndex]
 
     setActiveChallenge(challenge)
+
+    new Audio("/notification.mp3").play()
   }
 
   function resetChallenge() {
